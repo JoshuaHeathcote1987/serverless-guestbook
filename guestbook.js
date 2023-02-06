@@ -1,13 +1,13 @@
 /**
  * Web application
  */
-const apiUrl = '';
+const apiUrl = 'https://us-south.functions.appdomain.cloud/api/v1/web/813781e6-0177-4281-a147-7c235a734fcd/guestbook';
 const guestbook = {
   // retrieve the existing guestbook entries
   get() {
     return $.ajax({
       type: 'GET',
-      url: `${apiUrl}/entries`,
+      url: `${apiUrl}/read-guestbook-entries-sequence.json`,
       dataType: 'json'
     });
   },
@@ -16,7 +16,7 @@ const guestbook = {
     console.log('Sending', name, email, comment)
     return $.ajax({
       type: 'PUT',
-      url: `${apiUrl}/entries`,
+      url: `${apiUrl}/save-guestbook-entry-sequence.json`,
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
         name,
@@ -28,7 +28,7 @@ const guestbook = {
   }
 };
 
-(function() {
+(function () {
 
   let entriesTemplate;
 
@@ -40,7 +40,7 @@ const guestbook = {
   function loadEntries() {
     console.log('Loading entries...');
     $('#entries').html('Loading entries...');
-    guestbook.get().done(function(result) {
+    guestbook.get().done(function (result) {
       if (!result.entries) {
         return;
       }
@@ -49,7 +49,7 @@ const guestbook = {
         entries: result.entries
       }
       $('#entries').html(entriesTemplate(context));
-    }).error(function(error) {
+    }).error(function (error) {
       $('#entries').html('No entries');
       console.log(error);
     });
@@ -57,22 +57,22 @@ const guestbook = {
 
   // intercept the click on the submit button, add the guestbook entry and
   // reload entries on success
-  $(document).on('submit', '#addEntry', function(e) {
+  $(document).on('submit', '#addEntry', function (e) {
     e.preventDefault();
 
     guestbook.add(
       $('#name').val().trim(),
       $('#email').val().trim(),
       $('#comment').val().trim()
-    ).done(function(result) {
+    ).done(function (result) {
       // reload entries
       loadEntries();
-    }).error(function(error) {
+    }).error(function (error) {
       console.log(error);
     });
   });
 
-  $(document).ready(function() {
+  $(document).ready(function () {
     prepareTemplates();
     loadEntries();
   });
